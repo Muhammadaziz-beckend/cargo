@@ -42,8 +42,8 @@ class User(TimeDateAbstract, AbstractUser):
         blank=True,
         null=True,
     )
-    warehouse = models.ForeignKey(
-        "cargo.Warehouse",
+    store = models.ForeignKey(
+        "cargo.Store",
         models.SET_NULL,
         verbose_name="склад",
         related_name="users",

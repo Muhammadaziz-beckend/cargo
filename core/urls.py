@@ -24,8 +24,8 @@ urlpatterns = [
     path("api/v1/",include('api.urls')),
     path('admin/', admin.site.urls),
     path('',lambda r: redirect('admin/')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns 
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

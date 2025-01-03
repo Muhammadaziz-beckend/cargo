@@ -13,7 +13,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             "phone",
-            "warehouse",
+            "store",
             "first_name",
             "last_name",
             "password",

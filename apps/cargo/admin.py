@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Trek, Warehouse
+from .models import Trek, Store
 
 
 @admin.register(Trek)
@@ -9,22 +9,31 @@ class TrekAdmin(admin.ModelAdmin):
         "id",
         "number_trek",
         "owner",
-        "status",
+        "china",
+        "store",
+        "client",
+        "is_archived",
     )
     list_display_links = (
         "id",
         "number_trek",
         "owner",
+        "china",
+        "store",
+        "client",
+        "is_archived",
     )
     list_filter = (
-        "status",
+        "china",
+        "store",
+        "client",
         "owner",
     )
-    list_editable = ("status",)
+    readonly_fields = ("store_user","is_archived",)
 
 
-@admin.register(Warehouse)
-class WarehouseAdmin(admin.ModelAdmin):
+@admin.register(Store)
+class StoreAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
@@ -33,6 +42,6 @@ class WarehouseAdmin(admin.ModelAdmin):
         "id",
         "name",
     )
-    
+
 
 # Register your models here.
