@@ -1,5 +1,5 @@
 # Python virtual environments
-.env
+# .env
 venv/
 
 # Compiled python files
@@ -15,7 +15,7 @@ migrations/
 *.log
 
 # Базы данных
-*.sqlite3
+# *.sqlite3
 
 # Настройки среды разработки
 .vscode/
