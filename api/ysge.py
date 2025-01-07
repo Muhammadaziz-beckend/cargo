@@ -6,7 +6,7 @@ from django.urls import path
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="Reclama telegram API",
+      title="Cargo API",
       default_version='v1',
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contact@snippets.local"),
