@@ -1,4 +1,4 @@
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
 from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.views import APIView
@@ -79,8 +79,8 @@ class StoreViewSet(UltraModelMixin):
         "update": CreateStoreSerializer,
     }
     permission_classes_by_active = {
-        "list": [IsAuthenticated],
-        "retrieve": [IsAuthenticated],
+        "list": [AllowAny],
+        "retrieve": [AllowAny],
         "create": [IsAuthenticated, IsAdminUser],
         "update": [IsAuthenticated, IsAdminUser],
     }
