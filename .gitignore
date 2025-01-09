@@ -15,7 +15,7 @@ migrations/
 *.log
 
 # Базы данных
-*.sqlite3
+/db.sqlite3
 
 # Настройки среды разработки
 .vscode/

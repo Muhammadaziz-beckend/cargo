@@ -9,6 +9,8 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 
 COPY . .
 
+# RUN python manage.py makemigrations --noinput
+# RUN python manage.py migrate --noinput
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
