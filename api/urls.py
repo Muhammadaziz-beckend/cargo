@@ -15,7 +15,7 @@ urlpatterns = [
     path("auth/login/", Login.as_view()),
     path("auth/logout", Logout.as_view()),
     # track
-    path("track/<int:id>/archived", DeleteTrackAPIView.as_view()),
+    path("track/<int:id>/archives/", DeleteTrackAPIView.as_view()),
     #
     path("", include(router.urls)),
 ]

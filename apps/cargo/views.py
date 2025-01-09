@@ -1,4 +1,4 @@
-from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.views import APIView
@@ -17,7 +17,7 @@ class TrackViewSet(UltraModelMixin):
     queryset = Trek.objects.filter(is_archived=False)
     queryset_obj_true = Trek.objects.filter(is_archived=True)
     lookup_field = "id"
-    http_method_names = ["get", "post", "put", "patch"]
+    http_method_names = ["get", "post", "put", "patch", "delete"]
     search_fields = ["number_trek", "description"]
     ordering = ["create_dt", "update_dt"]
     filter_backends = [
@@ -38,33 +38,63 @@ class TrackViewSet(UltraModelMixin):
         "update": [IsAuthenticated, IsOwner | IsAdminUser],
     }
 
-    @action(["GET"], False, "archived")
+    def get_queryset(self):
+        user = self.request.user
+
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method." % self.__class__.__name__
+        )
+        queryset = self.queryset.filter(owner=user).filter(is_archived=False)
+
+        return queryset
+
+    def get_queryset_obj_true(self):
+        user = self.request.user
+
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method." % self.__class__.__name__
+        )
+        queryset = self.queryset.filter(owner=user).filter(is_archived=True)
+
+        return queryset
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_archived = True
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(["GET"], False, "archives")
     def get_all_archived(self, request, *args, **kwargs):
-        queryset = self.queryset_obj_true
+        queryset = self.get_queryset_obj_true()
         serializers = ListTrekSerializer(queryset, many=True)
         return Response(serializers.data)
 
 
 class DeleteTrackAPIView(APIView):
-    queryset = Trek.objects.filter(is_archived=False)
+    queryset = Trek.objects
 
-    def get(self, request, id, *args, **kwargs):
-        queryset = get_object_or_404(self.queryset, id=id)
-        serializers = RetrieveTrekSerializer(queryset)
-        return Response(serializers.data)
+    def get_queryset(self):
+        user = self.request.user
+
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method." % self.__class__.__name__
+        )
+        queryset = self.queryset.filter(owner=user).filter(is_archived=True)
+
+        return queryset
 
     def post(self, request, id, *args, **kwargs):
-        queryset = get_object_or_404(self.queryset, id=id)
-        queryset.is_archived = True
-        queryset.save()
-        return Response(
-            {"message": "Трек-код успешно удален!"},
-            status=status.HTTP_204_NO_CONTENT,
-        )
 
-    def delete(self, request, id, *args, **kwargs):
+        track = get_object_or_404(self.get_queryset(), id=id)
 
-        return Response({"asd": id})
+        track.is_archived = False
+        track.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class StoreViewSet(UltraModelMixin):
