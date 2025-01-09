@@ -27,7 +27,7 @@ class Register(GenericAPIView):
         )
 
 
-class Login(ObtainAuthToken):
+class Login(GenericAPIView):
     serializer_class = AuthTokenSerializer
 
     def post(self, request, *args, **kwargs):
