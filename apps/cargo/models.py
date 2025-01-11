@@ -13,9 +13,12 @@ class Trek(TimeDateAbstract):
         "Описание",
     )
     owner = models.ForeignKey(
-        "account.User",
+        "account.User",  # Указываем строкой
         models.CASCADE,
+        verbose_name="user",
         related_name="treks",
+        blank=True,
+        null=True,
     )
     china = models.DateTimeField(
         "Прибытия в Китай",
@@ -46,7 +49,9 @@ class Trek(TimeDateAbstract):
     )
 
     def __str__(self):
-        return f"{self.number_trek} {self.owner}"
+        return f"{self.number_trek} "
+                            # {self.owner}
+        
 
     class Meta:
         verbose_name = "трек"

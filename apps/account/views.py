@@ -1,3 +1,5 @@
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -19,10 +21,15 @@ class Register(GenericAPIView):
 
         user = serializer.save()
 
-        token = Token.objects.get_or_create(user=user)[0].key
+        # Генерация JWT токенов
+        refresh = RefreshToken.for_user(user)
+        access = refresh.access_token
 
         return Response(
-            {"token": token},
+            {
+                "refresh": str(refresh),
+                "access": str(access),
+            },
             status=status.HTTP_201_CREATED,
         )
 
@@ -36,12 +43,17 @@ class Login(GenericAPIView):
         )
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
-        token, created = Token.objects.get_or_create(user=user)
+
+        # Генерация JWT токенов
+        refresh = RefreshToken.for_user(user)
+        access = refresh.access_token
+
         return Response(
             {
-                "token": token.key,
+                "refresh": str(refresh),
+                "access": str(access),
             },
-            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+            status.HTTP_200_OK,
         )
 
 
@@ -50,18 +62,15 @@ class Logout(GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        # Проверка для Swagger
-        if getattr(self, 'swagger_fake_view', False):
-            return Response()
-
-        try:
-            print(request.user.auth_token,type(request.user))
-            request.user.auth_token.delete()
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
             return Response(
-                {"message": "Успешно вышел из системы."}, status=status.HTTP_200_OK
-            )
-        except Exception as e:
-            return Response(
-                {"error": "Что-то пошло не так при выходе из системы."},
+                {"error": "Refresh токен обязателен"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Вы успешно вышли"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
