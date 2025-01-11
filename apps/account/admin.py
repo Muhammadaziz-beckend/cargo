@@ -11,7 +11,7 @@ class UserAdmin(BaseUserAdmin):
         "id",
         "phone",
         "get_full_name",
-        "store",
+        # "store",
     )
     list_display_links = (
         "id",
@@ -30,7 +30,7 @@ class UserAdmin(BaseUserAdmin):
                     "email",
                     "phone",
                     "password",
-                    "store",
+                    # "store",
                 )
             },
         ),
